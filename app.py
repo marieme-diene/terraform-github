@@ -1,9 +1,12 @@
 from flask import Flask, request, render_template
 import requests
 import os
-from dotenv import load_dotenv
 
-load_dotenv()  # Charge les variables du fichier .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # Charge les variables du fichier .env
+except ImportError:
+    pass  # python-dotenv non installé : utilisez les variables d'environnement système
 
 app = Flask(__name__)
 
@@ -14,8 +17,8 @@ def index():
 @app.route("/trigger", methods=["POST"])
 def trigger_pipeline():
     github_token = os.getenv("GITHUB_TOKEN")  # Token depuis variable d'environnement
-    owner = "cheikhdoss"
-    repo = "aws-automation"
+    owner = "marieme-diene"
+    repo = "terraform-github"
     workflow_file = "terraform.yml"
     
     url = f"https://api.github.com/repos/{owner}/{repo}/actions/workflows/{workflow_file}/dispatches"
@@ -40,7 +43,7 @@ def trigger_pipeline():
 
     # GitHub renvoie 204 (No Content) quand le workflow est déclenché avec succès
     if response.status_code == 204:
-        return "reponse : 204 ", 201
+        return "reponse : 201 ", 201
     else:
         return f"❌ Erreur: {response.status_code}<br>{response.text}", response.status_code
 
