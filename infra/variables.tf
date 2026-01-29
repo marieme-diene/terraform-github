@@ -1,5 +1,5 @@
 variable "region" {
-  default = "us-west-3"
+  default = "eu-west-3"  # Paris
 }
 
 variable "access_key" {
@@ -14,7 +14,8 @@ variable "secret_access_key" {
 
 variable "ami" {
   type    = string
-  default = "ami-038bba9a164eb3dc1"  # Ubuntu 22.04 LTS for us-west-1
+  # Vide = utilisation auto de la dernière Ubuntu 22.04 (eu-west-3). Sinon : AMI depuis https://cloud-images.ubuntu.com/locator/ec2/
+  default = ""
 }
 
 variable "instance_type" {
