@@ -5,7 +5,7 @@ provider "aws" {
 }
 
 data "aws_ami" "ubuntu_2204" {
-  count       = var.ami != "" ? 0 : 1
+  count       = var.ami == "" ? 1 : 0
   most_recent = true
   owners      = ["099720109477"] # Canonical
 
@@ -19,8 +19,27 @@ data "aws_ami" "ubuntu_2204" {
   }
 }
 
+data "aws_ami" "amazon_linux_2023" {
+  count       = var.ami == "amazon-linux-2023" ? 1 : 0
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-kernel-*-x86_64"]
+  }
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+}
+
+locals {
+  ami_id = var.ami == "" ? data.aws_ami.ubuntu_2204[0].id : var.ami == "amazon-linux-2023" ? data.aws_ami.amazon_linux_2023[0].id : var.ami
+}
+
 resource "aws_instance" "ec2_demo" {
-  ami           = var.ami != "" ? var.ami : data.aws_ami.ubuntu_2204[0].id
+  ami           = local.ami_id
   instance_type = var.instance_type
   tags = {
     Name = var.instance_name
